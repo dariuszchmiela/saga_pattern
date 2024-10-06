@@ -1,49 +1,46 @@
 package com.dch.saga_pattern.model;
 
+import java.util.Set;
+import java.util.UUID;
+
 public class Order {
-    private String orderId;
-    private String product;
-    private String status;  // pending, completed, cancelled
+    private Long id;
+    private UUID orderId;
+    private Set<Product> products;
 
     public Order() {
     }
 
-    public Order(String orderId, String product, String status) {
+    public Order(Long id, UUID orderId, Set<Product> products) {
+        this.id = id;
         this.orderId = orderId;
-        this.product = product;
-        this.status = status;
+        this.products = products;
     }
 
-    public String getOrderId() {
+    public UUID getOrderId() {
         return orderId;
     }
 
-    public void setOrderId(String orderId) {
+    public Order setOrderId(UUID orderId) {
         this.orderId = orderId;
+        return this;
     }
 
-    public String getProduct() {
-        return product;
+    public Set<Product> getProducts() {
+        return products;
     }
 
-    public void setProduct(String product) {
-        this.product = product;
+    public Order setProducts(Set<Product> products) {
+        this.products = products;
+        return this;
     }
 
-    public String getStatus() {
-        return status;
+    public Long getId() {
+        return id;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    @Override
-    public String toString() {
-        return "Order{" +
-                "orderId='" + orderId + '\'' +
-                ", product='" + product + '\'' +
-                ", status='" + status + '\'' +
-                '}';
+    public Order setId(Long id) {
+        this.id = id;
+        return this;
     }
 }

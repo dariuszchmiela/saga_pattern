@@ -1,49 +1,45 @@
 package com.dch.saga_pattern.model;
 
+import java.util.UUID;
+
 public class Payment {
-    private String paymentId;
-    private String orderId;
-    private String status;  // pending, completed, failed
+    private Long id;
+    private UUID paymentId;
+    private PaymentStatus status;
 
     public Payment() {
     }
 
-    public Payment(String paymentId, String orderId, String status) {
+    public Payment(Long id, UUID paymentId, PaymentStatus status) {
+        this.id = id;
         this.paymentId = paymentId;
-        this.orderId = orderId;
         this.status = status;
     }
 
-    public String getPaymentId() {
+    public Long getId() {
+        return id;
+    }
+
+    public Payment setId(Long id) {
+        this.id = id;
+        return this;
+    }
+
+    public UUID getPaymentId() {
         return paymentId;
     }
 
-    public void setPaymentId(String paymentId) {
+    public Payment setPaymentId(UUID paymentId) {
         this.paymentId = paymentId;
+        return this;
     }
 
-    public String getOrderId() {
-        return orderId;
-    }
-
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
-    }
-
-    public String getStatus() {
+    public PaymentStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public Payment setStatus(PaymentStatus status) {
         this.status = status;
-    }
-
-    @Override
-    public String toString() {
-        return "Payment{" +
-                "paymentId='" + paymentId + '\'' +
-                ", orderId='" + orderId + '\'' +
-                ", status='" + status + '\'' +
-                '}';
+        return this;
     }
 }

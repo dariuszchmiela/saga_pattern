@@ -1,0 +1,36 @@
+@startuml
+
+entity UserEntity {
+  * id : Long
+  * userName : String
+  * email : String
+  * createdAt : Date
+  * updatedAt : Date
+}
+
+entity ProductEntity {
+  * id : Long
+  * productId : UUID
+  * name : String
+  * price : BigDecimal
+  * productType : ProductType
+}
+
+entity OrderEntity {
+  * id : Long
+  * orderId : UUID
+}
+
+entity PaymentEntity {
+  * id : Long
+  * paymentId : UUID
+  * amount : BigDecimal
+  * paymentDate : Date
+}
+
+UserEntity ||--o{ OrderEntity : "has"
+OrderEntity ||--o{ ProductEntity : "contains"
+OrderEntity ||--o{ PaymentEntity : "has"
+ProductEntity }|--|{ PaymentEntity : "paid with"
+
+@enduml
