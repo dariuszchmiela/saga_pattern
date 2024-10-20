@@ -1,52 +1,59 @@
 package com.dch.saga_pattern.service;
 
-import com.dch.saga_pattern.exception.UserAlreadyExistException;
-import com.dch.saga_pattern.exception.UserNotExistException;
-import com.dch.saga_pattern.model.CreateUserDto;
 import com.dch.saga_pattern.model.Order;
 import com.dch.saga_pattern.model.Product;
+import com.dch.saga_pattern.model.User;
 import com.dch.saga_pattern.model.UserDto;
 import com.dch.saga_pattern.storage.entity.OrderEntity;
 import com.dch.saga_pattern.storage.entity.ProductEntity;
 import com.dch.saga_pattern.storage.entity.UserEntity;
 import com.dch.saga_pattern.storage.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final SagaOrchestrator<User, UserEntity> sagaOrchestrator;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, CreateUserSagaStep createUserSagaStep) {
         this.userRepository = userRepository;
+        this.sagaOrchestrator = new SagaOrchestrator<>();
+        this.sagaOrchestrator.addStep(createUserSagaStep);
     }
 
-    public void createUser(CreateUserDto dto) {
-        Objects.requireNonNull(dto, "CreateUserDto cannot be null");
-        if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
-            throw new UserAlreadyExistException("UserDto with email " + dto.getEmail() + " already exists");
-        }
-        userRepository.save(toEntities(dto));
+    public User createUser(User dto) {
+        Objects.requireNonNull(dto, "User cannot be null");
+        return toDtoWithOrders(sagaOrchestrator.execute(dto));
     }
 
-
-    public Optional<UserDto> getUserByEmail(String email) {
+    @Transactional(readOnly = true)
+    public Optional<User> getUserByEmail(String email) {
         Objects.requireNonNull(email, "Email cannot be null");
-        return userRepository.findByEmail(email).map(this::toDto);
+        return userRepository.findByEmail(email).map(this::toDtoWithOrders);
     }
 
-    private UserDto getUserByEmailOrThrow(String email) {
-        return userRepository.findByEmail(email).map(this::toDto).orElseThrow(() -> new UserNotExistException("UserDto with email " + email + " does not exist"));
+    @Transactional(readOnly = true)
+    public Optional<User> getUserById(UUID userId) {
+        Objects.requireNonNull(userId, "UserId cannot be null");
+        return userRepository.findByUserId(userId).map(this::toDtoWithOrders);
     }
 
-    public UserDto toDto(UserEntity entity) {
-        UserDto user = new UserDto(entity.getUserName(), entity.getEmail())
-                .setId(entity.getId());
+    @Transactional
+    public void deleteUser(UUID userId) {
+        Objects.requireNonNull(userId, "UserId cannot be null");
+        userRepository.deleteByUserId(userId);
+    }
+
+    private User toDtoWithOrders(UserEntity entity) {
+        User user = new User(entity.getName(), entity.getEmail());
         user.setOrders(toOrderDtos(entity.getOrders()));
         return user;
     }
@@ -55,32 +62,31 @@ public class UserService {
         if (entities == null) {
             return List.of();
         }
-        return entities.stream().map(this::toDto).collect(Collectors.toList());
+        return entities.stream().map(this::toDtoWithOrders).collect(Collectors.toList());
     }
 
-    private Order toDto(OrderEntity entity) {
-        return new Order(entity.getId(), entity.getOrderId(), toProductDtos(entity.getProducts()));
+    private Order toDtoWithOrders(OrderEntity entity) {
+        if (entity == null) {
+            return null;
+        }
+        return new Order(entity.getId(), entity.getOrderId(), toProductDtos(entity.getProducts()), toUser(entity.getUser()));
     }
 
     private Set<Product> toProductDtos(Set<ProductEntity> entities) {
         if (entities == null) {
             return Set.of();
         }
-        return entities.stream().map(this::toDto).collect(Collectors.toSet());
+        return entities.stream().map(this::toDtoWithOrders).collect(Collectors.toSet());
     }
 
-    private Product toDto(ProductEntity entity) {
+    private Product toDtoWithOrders(ProductEntity entity) {
         if (entity == null) {
             return null;
         }
-        return new Product(entity.getId(), entity.getProductId(), entity.getName(), entity.getPrice(), entity.getProductType());
+        return new Product(entity.getId(), entity.getProductId(), entity.getName(), entity.getPrice(), entity.getType());
     }
 
-    private UserEntity toEntities(CreateUserDto dto) {
-        return new UserEntity(
-                dto.getUserName(),
-                dto.getEmail(),
-                Set.of() // Initialize with an empty set or the appropriate set of OrderEntity objects
-        );
+    private UserDto toUser(UserEntity entity) {
+        return new UserDto(entity.getUserId(), entity.getEmail(), entity.getName());
     }
 }

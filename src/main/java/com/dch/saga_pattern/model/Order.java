@@ -7,14 +7,25 @@ public class Order {
     private Long id;
     private UUID orderId;
     private Set<Product> products;
+    private UserDto user;
 
     public Order() {
     }
 
-    public Order(Long id, UUID orderId, Set<Product> products) {
+    public Order(Long id, UUID orderId, Set<Product> products, UserDto user) {
         this.id = id;
         this.orderId = orderId;
         this.products = products;
+        this.user = user;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Order setId(Long id) {
+        this.id = id;
+        return this;
     }
 
     public UUID getOrderId() {
@@ -35,12 +46,22 @@ public class Order {
         return this;
     }
 
-    public Long getId() {
-        return id;
+    public UserDto getUser() {
+        return user;
     }
 
-    public Order setId(Long id) {
-        this.id = id;
+    public Order setUser(UserDto user) {
+        this.user = user;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "id=" + id +
+                ", orderId=" + orderId +
+                ", products=" + products +
+                ", user=" + user +
+                '}';
     }
 }

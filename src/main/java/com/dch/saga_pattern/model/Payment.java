@@ -42,4 +42,13 @@ public class Payment {
         this.status = status;
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "Payment{" +
+                "id=" + id +
+                ", paymentId=" + paymentId +
+                ", status=" + status +
+                '}';
+    }
 }

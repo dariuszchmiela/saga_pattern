@@ -1,7 +1,8 @@
 package com.dch.saga_pattern.service;
 
 import com.dch.saga_pattern.exception.ProductAlreadyExistException;
-import com.dch.saga_pattern.model.CreateProductDto;
+import com.dch.saga_pattern.model.Product;
+import com.dch.saga_pattern.model.ProductDto;
 import com.dch.saga_pattern.model.ProductType;
 import com.dch.saga_pattern.storage.repository.ProductRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -10,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -19,8 +19,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 class ProductServiceTest {
-    public static final UUID PRODUCT_ID = UUID.randomUUID();
-    public static final String PRODUCT_A = "Product A";
+    private static final String PRODUCT_A = "Product A";
+    private static final ProductDto CREATE_PRODUCT_DTO = new ProductDto(PRODUCT_A, BigDecimal.ONE, ProductType.A);
     @Autowired
     private ProductRepository productRepository;
     @Autowired
@@ -36,28 +36,28 @@ class ProductServiceTest {
         // given
         assertTrue(productRepository.findAll().isEmpty());
         // when
-        productService.createProduct(new CreateProductDto(PRODUCT_ID, PRODUCT_A, BigDecimal.ONE, ProductType.A));
+        Product result = productService.createProduct(CREATE_PRODUCT_DTO);
         // then
 
-        assertThat(productRepository.findByProductId(PRODUCT_ID))
+        assertThat(productRepository.findByProductId(result.getProductId()))
                 .isPresent()
                 .get()
                 .satisfies(product -> {
                     assertThat(product.getName()).isEqualTo(PRODUCT_A);
-                    assertThat(product.getProductId()).isEqualTo(PRODUCT_ID);
+                    assertThat(product.getProductId()).isEqualTo(result.getProductId());
                     assertThat(product.getId()).isNotNull();
                     assertThat(product.getPrice().compareTo(BigDecimal.ONE)).isZero();
-                    assertThat(product.getProductType()).isEqualTo(ProductType.A);
+                    assertThat(product.getType()).isEqualTo(ProductType.A);
                 });
     }
 
     @Test
     void createProductAlreadyExists() {
         // given
-        productService.createProduct(new CreateProductDto(PRODUCT_ID, PRODUCT_A, BigDecimal.ONE, ProductType.A));
+        productService.createProduct(CREATE_PRODUCT_DTO);
         // when & then
-        assertThatThrownBy(() -> productService.createProduct(new CreateProductDto(PRODUCT_ID, PRODUCT_A, BigDecimal.ONE, ProductType.A)))
+        assertThatThrownBy(() -> productService.createProduct(CREATE_PRODUCT_DTO))
                 .isInstanceOf(ProductAlreadyExistException.class)
-                .hasMessageContaining("Product with productId " + PRODUCT_ID + " already exists");
+                .hasMessageContaining("Product with productId ");
     }
 }

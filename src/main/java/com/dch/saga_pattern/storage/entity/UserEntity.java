@@ -7,20 +7,28 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
+@Table(name = "users", schema = "STORE", indexes = {
+        @Index(name = "idx_user_email", columnList = "email")
+})
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String userName;
+    @Column(unique = true, nullable = false)
+    private UUID userId;
+    private String name;
     @Column(unique = true, nullable = false)
     private String email;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -38,22 +46,30 @@ public class UserEntity {
     public UserEntity() {
     }
 
-    public UserEntity(String username, String email, Set<OrderEntity> orders) {
-        this.userName = username;
+    public UserEntity(String email) {
+        this.userId = UUID.randomUUID();
         this.email = email;
-        this.orders = orders;
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getUserName() {
-        return userName;
+    public UUID getUserId() {
+        return userId;
     }
 
-    public void setUserName(String username) {
-        this.userName = username;
+    public UserEntity setUserId(UUID userId) {
+        this.userId = userId;
+        return this;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String username) {
+        this.name = username;
     }
 
     public String getEmail() {

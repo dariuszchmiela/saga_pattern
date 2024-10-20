@@ -1,0 +1,9 @@
+@startuml
+actor User
+User -> ProductController: createProduct(createProductDto)
+ProductController -> CreateProductSagaStep: execute(createProductDto)
+CreateProductSagaStep -> ProductRepository: save(productEntity)
+ProductRepository --> CreateProductSagaStep: productEntity
+CreateProductSagaStep --> ProductController: productEntity
+ProductController --> User: ResponseEntity.status(HttpStatus.CREATED).body(productEntity)
+@enduml

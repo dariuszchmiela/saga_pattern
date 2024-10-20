@@ -13,4 +13,6 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
     Optional<ProductEntity> findByProductId(UUID productId);
 
     Set<ProductEntity> findByProductIdIn(Set<UUID> productIds);
+
+    void deleteByProductId(UUID productId);
 }

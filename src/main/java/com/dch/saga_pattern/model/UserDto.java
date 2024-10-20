@@ -1,45 +1,27 @@
 package com.dch.saga_pattern.model;
 
-import java.util.List;
+import java.util.UUID;
 
 public class UserDto {
-    private Long id;
-    private String userName;
+    private UUID userId;
     private String email;
-    private List<Order> orders;
+    private String name;
 
     public UserDto() {
     }
 
-    public UserDto(String userName, String email) {
-        this.userName = userName;
+    public UserDto(UUID userId, String email, String name) {
+        this.userId = userId;
         this.email = email;
+        this.name = name;
     }
 
-    public List<Order> getOrders() {
-        return orders;
+    public UUID getUserId() {
+        return userId;
     }
 
-    public UserDto setOrders(List<Order> orders) {
-        this.orders = orders;
-        return this;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public UserDto setId(Long id) {
-        this.id = id;
-        return this;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public UserDto setUserName(String userName) {
-        this.userName = userName;
+    public UserDto setUserId(UUID userId) {
+        this.userId = userId;
         return this;
     }
 
@@ -50,5 +32,23 @@ public class UserDto {
     public UserDto setEmail(String email) {
         this.email = email;
         return this;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public UserDto setName(String name) {
+        this.name = name;
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        return "UserDto{" +
+                "userId=" + userId +
+                ", email='" + email + '\'' +
+                ", name='" + name + '\'' +
+                '}';
     }
 }

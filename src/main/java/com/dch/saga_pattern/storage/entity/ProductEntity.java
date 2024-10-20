@@ -5,21 +5,24 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Set;
 import java.util.UUID;
 
 @Entity
+@Table(name = "products", schema = "STORE", indexes = {
+        @Index(name = "idx_product_product_id", columnList = "productId"),
+        @Index(name = "idx_product_name", columnList = "name")
+})
 public class ProductEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,9 +34,8 @@ public class ProductEntity {
     @Column(nullable = false)
     private BigDecimal price;
     @Enumerated(EnumType.STRING)
-    private ProductType productType;
-    @ManyToMany(mappedBy = "products", fetch = FetchType.LAZY)
-    private Set<OrderEntity> orders;
+    @Column(nullable = false)
+    private ProductType type;
     @Version
     @Column(nullable = false)
     private Long version;
@@ -47,13 +49,11 @@ public class ProductEntity {
     public ProductEntity() {
     }
 
-    public ProductEntity(Long id, UUID productId, String name, BigDecimal price, ProductType productType, Set<OrderEntity> orders) {
-        this.id = id;
+    public ProductEntity(UUID productId, String name, BigDecimal price, ProductType type) {
         this.productId = productId;
         this.name = name;
         this.price = price;
-        this.productType = productType;
-        this.orders = orders;
+        this.type = type;
     }
 
     public Long getId() {
@@ -87,21 +87,12 @@ public class ProductEntity {
         return this;
     }
 
-    public ProductType getProductType() {
-        return productType;
+    public ProductType getType() {
+        return type;
     }
 
-    public ProductEntity setProductType(ProductType productType) {
-        this.productType = productType;
-        return this;
-    }
-
-    public Set<OrderEntity> getOrders() {
-        return orders;
-    }
-
-    public ProductEntity setOrders(Set<OrderEntity> orders) {
-        this.orders = orders;
+    public ProductEntity setType(ProductType productType) {
+        this.type = productType;
         return this;
     }
 

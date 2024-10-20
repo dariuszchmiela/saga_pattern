@@ -1,7 +1,15 @@
 spring:
+  test:
+    database:
+      replace: none
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.yml
   datasource:
-    url: jdbc:h2:mem:testdb
+    url: jdbc:h2:mem:testdb;IGNORECASE=true;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false;INIT=CREATE SCHEMA IF NOT EXISTS STORE
     driver-class-name: org.h2.Driver
+    hikari:
+      schema: STORE
     username: sa
     password:
   h2:
@@ -10,12 +18,15 @@ spring:
       path: /h2-console
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
+        default_schema: STORE
     show-sql: true
-    generate-ddl: true
+    generate-ddl: false
+    open-in-view: false
+    database-platform: org.hibernate.dialect.H2Dialect
+    database: h2
 
 logging:
   level:

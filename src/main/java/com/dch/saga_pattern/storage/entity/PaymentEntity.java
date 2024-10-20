@@ -9,23 +9,29 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
+@Table(name = "payments", schema = "STORE", indexes = {
+        @Index(name = "idx_payment_payment_id", columnList = "paymentId")
+})
 public class PaymentEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(unique = true, nullable = false)
     private UUID paymentId;
-    private Double amount;
+    private BigDecimal amount;
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
     @ManyToOne(fetch = FetchType.LAZY)
@@ -39,18 +45,22 @@ public class PaymentEntity {
     private LocalDateTime createdAt;
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
-
     private LocalDateTime updatedAt;
 
     public PaymentEntity() {
     }
 
-    public PaymentEntity(Long id, UUID paymentId, Double amount, PaymentStatus status, OrderEntity order) {
-        this.id = id;
+    public PaymentEntity(UUID paymentId, BigDecimal amount, PaymentStatus status, OrderEntity order) {
         this.paymentId = paymentId;
         this.amount = amount;
         this.status = status;
         this.order = order;
+    }
+
+    public PaymentEntity(UUID paymentId, BigDecimal amount, PaymentStatus status) {
+        this.paymentId = paymentId;
+        this.amount = amount;
+        this.status = status;
     }
 
     public Long getId() {
@@ -65,11 +75,11 @@ public class PaymentEntity {
         this.paymentId = paymentId;
     }
 
-    public Double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(Double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 

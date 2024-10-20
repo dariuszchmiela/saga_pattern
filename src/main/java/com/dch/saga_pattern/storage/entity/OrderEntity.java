@@ -6,10 +6,12 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -19,6 +21,10 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
+@Table(name = "orders", schema = "STORE", indexes = {
+        @Index(name = "idx_order_order_id", columnList = "orderId"),
+        @Index(name = "idx_order_user_id", columnList = "user_id")
+})
 public class OrderEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +32,7 @@ public class OrderEntity {
     @Column(unique = true, nullable = false)
     private UUID orderId;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(

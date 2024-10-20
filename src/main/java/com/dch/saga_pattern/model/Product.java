@@ -8,14 +8,14 @@ public class Product {
     private UUID productId;
     private String name;
     private BigDecimal price;
-    private ProductType productType;
+    private ProductType type;
 
-    public Product(Long id, UUID productId, String name, BigDecimal price, ProductType productType) {
+    public Product(Long id, UUID productId, String name, BigDecimal price, ProductType type) {
         this.id = id;
         this.productId = productId;
         this.name = name;
         this.price = price;
-        this.productType = productType;
+        this.type = type;
     }
 
     public Long getId() {
@@ -54,12 +54,23 @@ public class Product {
         return this;
     }
 
-    public ProductType getProductType() {
-        return productType;
+    public ProductType getType() {
+        return type;
     }
 
-    public Product setProductType(ProductType productType) {
-        this.productType = productType;
+    public Product setType(ProductType type) {
+        this.type = type;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", productId=" + productId +
+                ", name='" + name + '\'' +
+                ", price=" + price +
+                ", type=" + type +
+                '}';
     }
 }

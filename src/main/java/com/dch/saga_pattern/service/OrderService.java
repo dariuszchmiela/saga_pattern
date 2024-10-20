@@ -1,61 +1,39 @@
 package com.dch.saga_pattern.service;
 
-import com.dch.saga_pattern.exception.OrderAlreadyExistException;
-import com.dch.saga_pattern.model.CreateOrderDto;
+import com.dch.saga_pattern.mapper.OrderMapper;
 import com.dch.saga_pattern.model.Order;
-import com.dch.saga_pattern.model.Product;
+import com.dch.saga_pattern.model.OrderDto;
 import com.dch.saga_pattern.storage.entity.OrderEntity;
-import com.dch.saga_pattern.storage.entity.ProductEntity;
 import com.dch.saga_pattern.storage.repository.OrderRepository;
-import com.dch.saga_pattern.storage.repository.ProductRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class OrderService {
     private final OrderRepository orderRepository;
-    private final ProductRepository productRepository;
+    private final SagaOrchestrator<OrderDto, OrderEntity> sagaOrchestrator;
 
-    public OrderService(OrderRepository orderRepository, ProductRepository productRepository) {
+    public OrderService(OrderRepository orderRepository, CreateOrderSagaStep createOrderSagaStep) {
         this.orderRepository = orderRepository;
-        this.productRepository = productRepository;
+        this.sagaOrchestrator = new SagaOrchestrator<>();
+        this.sagaOrchestrator.addStep(createOrderSagaStep);
     }
 
-    public Order createOrder(CreateOrderDto dto) {
-        if (orderRepository.findByOrderId(dto.getOrderId()).isPresent()) {
-            throw new OrderAlreadyExistException("Order with orderId " + dto.getOrderId() + " already exists");
-        }
-        OrderEntity orderEntity = toEntity(dto);
-        return toDto(orderRepository.save(orderEntity));
+    @Transactional(readOnly = true)
+    public Optional<Order> getOrderById(UUID orderId) {
+        return orderRepository.findByOrderId(orderId).map(OrderMapper::toDto);
     }
 
-    private Order toDto(OrderEntity entity) {
-        return new Order(entity.getId(), entity.getOrderId(), toProductDtos(entity.getProducts()));
+    @Transactional
+    public Order createOrder(OrderDto dto) {
+        return OrderMapper.toDto(sagaOrchestrator.execute(dto));
     }
 
-    private Set<Product> toProductDtos(Set<ProductEntity> entities) {
-        if (entities == null) {
-            return Set.of();
-        }
-        return entities.stream().map(this::toDto).collect(Collectors.toSet());
-    }
-
-    private Product toDto(ProductEntity entity) {
-        if (entity == null) {
-            return null;
-        }
-        return new Product(entity.getId(), entity.getProductId(), entity.getName(), entity.getPrice(), entity.getProductType());
-    }
-
-    private OrderEntity toEntity(CreateOrderDto dto) {
-        OrderEntity orderEntity = new OrderEntity();
-        orderEntity.setOrderId(dto.getOrderId());
-
-        Set<ProductEntity> products = productRepository.findByProductIdIn(dto.getProductIds());
-        orderEntity.setProducts(products);
-
-        return orderEntity;
+    @Transactional
+    public void deleteOrder(UUID orderId) {
+        orderRepository.deleteByOrderId(orderId);
     }
 }

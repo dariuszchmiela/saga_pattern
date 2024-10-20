@@ -1,0 +1,9 @@
+@startuml
+actor User
+User -> OrderController: createOrder(createOrderDto)
+OrderController -> OrderService: createOrder(createOrderDto)
+OrderService -> OrderRepository: save(orderEntity)
+OrderRepository --> OrderService: orderEntity
+OrderService --> OrderController: orderEntity
+OrderController --> User: ResponseEntity.status(HttpStatus.CREATED).body(orderEntity)
+@enduml

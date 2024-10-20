@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.27.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1729424427345-1" author="dch">
+        <createTable schemaName="store" tableName="order_product">
+            <column name="order_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_order_product"/>
+            </column>
+            <column name="product_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_order_product"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1729424427345-2" author="dch">
+        <createTable schemaName="store" tableName="orders">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_orders"/>
+            </column>
+            <column name="order_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="created_at" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1729424427345-3" author="dch">
+        <createTable schemaName="store" tableName="payments">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_payments"/>
+            </column>
+            <column name="payment_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="amount" type="DECIMAL"/>
+            <column name="status" type="VARCHAR(255)"/>
+            <column name="order_id" type="BIGINT"/>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1729424427345-4" author="dch">
+        <createTable schemaName="store" tableName="products">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_products"/>
+            </column>
+            <column name="product_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price" type="DECIMAL">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1729424427345-5" author="dch">
+        <createTable schemaName="store" tableName="users">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_users"/>
+            </column>
+            <column name="user_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="email" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="BIGINT"/>
+            <column name="created_at" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1729424427345-6" author="dch">
+        <addUniqueConstraint columnNames="order_id" constraintName="uc_orders_orderid" schemaName="store"
+                             tableName="orders"/>
+    </changeSet>
+    <changeSet id="1729424427345-7" author="dch">
+        <addUniqueConstraint columnNames="payment_id" constraintName="uc_payments_paymentid" schemaName="store"
+                             tableName="payments"/>
+    </changeSet>
+    <changeSet id="1729424427345-8" author="dch">
+        <addUniqueConstraint columnNames="product_id" constraintName="uc_products_productid" schemaName="store"
+                             tableName="products"/>
+    </changeSet>
+    <changeSet id="1729424427345-9" author="dch">
+        <addUniqueConstraint columnNames="email" constraintName="uc_users_email" schemaName="store" tableName="users"/>
+    </changeSet>
+    <changeSet id="1729424427345-10" author="dch">
+        <addUniqueConstraint columnNames="user_id" constraintName="uc_users_userid" schemaName="store"
+                             tableName="users"/>
+    </changeSet>
+    <changeSet id="1729424427345-11" author="dch">
+        <createIndex indexName="idx_order_order_id" schemaName="store" tableName="orders">
+            <column name="order_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet id="1729424427345-13" author="dch">
+        <createIndex indexName="idx_payment_payment_id" schemaName="store" tableName="payments">
+            <column name="payment_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet id="1729424427345-14" author="dch">
+        <createIndex indexName="idx_product_name" schemaName="store" tableName="products">
+            <column name="name"/>
+        </createIndex>
+    </changeSet>
+    <changeSet id="1729424427345-15" author="dch">
+        <createIndex indexName="idx_product_product_id" schemaName="store" tableName="products">
+            <column name="product_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet id="1729424427345-16" author="dch">
+        <createIndex indexName="idx_user_email" schemaName="store" tableName="users">
+            <column name="email"/>
+        </createIndex>
+    </changeSet>
+    <changeSet id="1729424427345-17" author="dch">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="orders" baseTableSchemaName="store"
+                                 constraintName="FK_ORDERS_ON_USER" referencedColumnNames="id"
+                                 referencedTableName="users" referencedTableSchemaName="store"/>
+
+        <createIndex indexName="idx_order_user_id" schemaName="store" tableName="orders">
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet id="1729424427345-18" author="dch">
+        <addForeignKeyConstraint baseColumnNames="order_id" baseTableName="payments" baseTableSchemaName="store"
+                                 constraintName="FK_PAYMENTS_ON_ORDER" referencedColumnNames="id"
+                                 referencedTableName="orders" referencedTableSchemaName="store"/>
+    </changeSet>
+    <changeSet id="1729424427345-19" author="dch">
+        <addForeignKeyConstraint baseColumnNames="order_id" baseTableName="order_product" baseTableSchemaName="store"
+                                 constraintName="fk_ordpro_on_order_entity" referencedColumnNames="id"
+                                 referencedTableName="orders" referencedTableSchemaName="store"/>
+    </changeSet>
+    <changeSet id="1729424427345-20" author="dch">
+        <addForeignKeyConstraint baseColumnNames="product_id" baseTableName="order_product" baseTableSchemaName="store"
+                                 constraintName="fk_ordpro_on_product_entity" referencedColumnNames="id"
+                                 referencedTableName="products" referencedTableSchemaName="store"/>
+    </changeSet>
+
+</databaseChangeLog>

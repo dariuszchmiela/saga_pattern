@@ -1,0 +1,9 @@
+@startuml
+actor User
+User -> UserController: createUser(createUserDto)
+UserController -> UserService: createUser(createUserDto)
+UserService -> UserRepository: save(userEntity)
+UserRepository --> UserService: userEntity
+UserService --> UserController: userEntity
+UserController --> User: ResponseEntity.status(HttpStatus.CREATED).body(userEntity)
+@enduml
